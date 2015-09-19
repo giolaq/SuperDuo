@@ -109,7 +109,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         });
 
         if(savedInstanceState!=null){
-            // Bug solved: If saved text is empty don't modify ean!
+            // BUG SOLVED: If saved text is empty don't modify ean!
             String savedText = savedInstanceState.getString(EAN_CONTENT);
             if (!savedText.isEmpty()) {
                 ean.setText(savedInstanceState.getString(EAN_CONTENT));
