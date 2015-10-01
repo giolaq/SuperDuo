@@ -26,4 +26,13 @@
     <!-- This is an odd width, but we're trying to match the font closely to keep things working
          on devices that don't yet have Roboto -->
     <dimen name="forecast_temperature_space">8dp</dimen>
+
+
+
+    <!-- Today Widget -->
+    <dimen name="widget_detail_default_width">250dp</dimen>
+    <dimen name="widget_detail_default_height">180dp</dimen>
+    <dimen name="widget_detail_min_resize_width">220dp</dimen>
+    <dimen name="widget_detail_min_resize_height">@dimen/widget_detail_default_height</dimen>
+
 </resources>
