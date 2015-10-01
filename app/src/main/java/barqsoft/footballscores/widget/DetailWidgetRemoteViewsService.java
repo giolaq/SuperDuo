@@ -7,19 +7,17 @@ package barqsoft.footballscores.widget;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import java.util.concurrent.ExecutionException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import barqsoft.footballscores.DatabaseContract;
-
 import barqsoft.footballscores.R;
 
 /**
@@ -35,12 +33,10 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
             DatabaseContract.scores_table.AWAY_COL
     };
     // these indices must match the projection
-    static final int INDEX_WEATHER_ID = 0;
-    static final int INDEX_WEATHER_DATE = 1;
-    static final int INDEX_WEATHER_CONDITION_ID = 2;
-    static final int INDEX_WEATHER_DESC = 3;
-    static final int INDEX_WEATHER_MAX_TEMP = 4;
-    static final int INDEX_WEATHER_MIN_TEMP = 5;
+    static final int INDEX_SCORE_ID = 0;
+    static final int INDEX_LEAGUE = 1;
+    static final int INDEX_HOME = 2;
+    static final int INDEX_AWAY = 3;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -70,6 +66,17 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 //                        null,
 //                        null,
 //                        WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
+                Date fragmentdate = new Date(System.currentTimeMillis() + ((-1) * 86400000));
+                SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+                String[] date = new String[1];
+                date[0] = mformat.format(fragmentdate);
+
+                Uri uri = DatabaseContract.scores_table.buildScoreWithDate();
+                data = getContentResolver().query(uri,
+                        FORECAST_COLUMNS,
+                        null,
+                        date,
+                        null);
                 Binder.restoreCallingIdentity(identityToken);
             }
 
@@ -141,6 +148,13 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 //                        dateInMillis);
 //                fillInIntent.setData(weatherUri);
 //                views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
+                String league = data.getString(INDEX_LEAGUE);
+                String home = data.getString(INDEX_HOME);
+                String away = data.getString(INDEX_AWAY);
+
+                views.setTextViewText(R.id.widget_date, league);
+                views.setTextViewText(R.id.widget_description, home);
+                views.setTextViewText(R.id.widget_high_temperature, away);
                 return views;
             }
 
@@ -162,7 +176,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
             @Override
             public long getItemId(int position) {
                 if (data.moveToPosition(position))
-                    return data.getLong(INDEX_WEATHER_ID);
+                    return data.getLong(INDEX_SCORE_ID);
                 return position;
             }
 
