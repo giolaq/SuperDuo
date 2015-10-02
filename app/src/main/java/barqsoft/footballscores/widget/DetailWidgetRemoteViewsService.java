@@ -66,7 +66,7 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
 //                        null,
 //                        null,
 //                        WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
-                Date fragmentdate = new Date(System.currentTimeMillis() + ((-1) * 86400000));
+                Date fragmentdate = new Date(System.currentTimeMillis() + ((0) * 86400000));
                 SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
                 String[] date = new String[1];
                 date[0] = mformat.format(fragmentdate);
@@ -152,15 +152,14 @@ public class DetailWidgetRemoteViewsService extends RemoteViewsService {
                 String home = data.getString(INDEX_HOME);
                 String away = data.getString(INDEX_AWAY);
 
-                views.setTextViewText(R.id.widget_date, league);
-                views.setTextViewText(R.id.widget_description, home);
-                views.setTextViewText(R.id.widget_high_temperature, away);
+                views.setTextViewText(R.id.home_name, home);
+                views.setTextViewText(R.id.away_name, away);
                 return views;
             }
 
             @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
             private void setRemoteContentDescription(RemoteViews views, String description) {
-                views.setContentDescription(R.id.widget_icon, description);
+                views.setContentDescription(R.id.home_crest, description);
             }
 
             @Override
