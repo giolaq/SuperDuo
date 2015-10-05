@@ -19,7 +19,7 @@ import android.widget.RemoteViews;
 import barqsoft.footballscores.MainActivity;
 
 import barqsoft.footballscores.R;
-import barqsoft.footballscores.service.myFetchService;
+import barqsoft.footballscores.service.MyFetchService;
 
 /**
  * Provider for a scrollable weather detail widget
@@ -61,7 +61,7 @@ public class TodayWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
-        if (myFetchService.ACTION_DATA_UPDATED.equals(intent.getAction())) {
+        if (MyFetchService.ACTION_DATA_UPDATED.equals(intent.getAction())) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));
