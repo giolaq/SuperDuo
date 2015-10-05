@@ -34,7 +34,7 @@ import barqsoft.footballscores.R;
  * Created by yehya khaled on 3/2/2015.
  */
 public class MyFetchService extends IntentService {
-    public static final String LOG_TAG = "myFetchService";
+    public static final String LOG_TAG = MyFetchService.class.getSimpleName();
 
     public static final String ACTION_DATA_UPDATED =
             "barqsoft.footballscores.service.ACTION_DATA_UPDATED";
