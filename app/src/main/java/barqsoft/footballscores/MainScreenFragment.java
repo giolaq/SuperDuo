@@ -1,8 +1,10 @@
 package barqsoft.footballscores;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -12,13 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import barqsoft.footballscores.service.MyFetchService;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainScreenFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
+public class MainScreenFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public scoresAdapter mAdapter;
     public static final int SCORES_LOADER = 0;
@@ -28,6 +31,21 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public MainScreenFragment()
     {
     }
+
+    @Override
+    public void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
 
     private void update_scores()
     {
@@ -44,6 +62,11 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
+
+        //Empty view to display no matches
+        View emptyView = rootView.findViewById(R.id.matches_empty);
+        score_list.setEmptyView(emptyView);
+
         mAdapter = new scoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER,null,this);
@@ -100,5 +123,41 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         mAdapter.swapCursor(null);
     }
 
+    /*
+          Updates the empty list view with contextually relevant information that the user can
+          use to determine why they aren't seeing weather.
+       */
+    private void updateEmptyView() {
+        if ( mAdapter.getCount() == 0 ) {
+            TextView tv = (TextView) getView().findViewById(R.id.matches_empty);
+            if ( null != tv ) {
+                // if cursor is empty, why? do we have an invalid location
+                int message = R.string.empty_matches_list;
+                @MyFetchService.MatchesStatus int matchesStatus = Utilities.getMatchesStatus(getActivity());
+                switch (matchesStatus) {
+                    case MyFetchService.MATCHES_STATUS_SERVER_DOWN:
+                        message = R.string.empty_matches_list_server_down;
+                        break;
+                    case MyFetchService.MATCHES_STATUS_SERVER_INVALID:
+                        message = R.string.empty_matches_list_server_error;
+                        break;
+                    case MyFetchService.MATCHES_STATUS_INVALID:
+                        message = R.string.empty_matches_list_invalid_location;
+                        break;
+                    default:
+                        if (!Utilities.isNetworkAvailable(getActivity())) {
+                            message = R.string.empty_matches_list_no_network;
+                        }
+                }
+                tv.setText(message);
+            }
+        }
+    }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_matches_status_key))) {
+            updateEmptyView();
+        }
+    }
 }

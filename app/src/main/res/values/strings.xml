@@ -48,5 +48,14 @@
     <string name="final_match">Final</string>
     <string name="matchday_x">"Matchday : "</string>
     <string name="goals_separator">" - "</string>
+    <string name="pref_matches_status_key">matches-status</string>
+
+
+    <!-- Empty Weather Database -->
+    <string name="empty_matches_list">No matches informations available</string>
+    <string name="empty_matches_list_no_network">No matches information available. The network is not available to fetch matches data.</string>
+    <string name="empty_matches_list_server_down">No matches information available. The server is not returning data.</string>
+    <string name="empty_matches_list_server_error">No matches information available. The server is not returning valid data. Please check for an updated version of FootballScores.</string>
+    matches<string name="empty_matches_list_invalid_location">No weather information available. The league in settings is not recognized by the matches server.</string>
 
 </resources>
