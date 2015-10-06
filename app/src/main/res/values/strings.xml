@@ -7,6 +7,14 @@
     <string name="scan">Scan/Add a Book</string>
     <string name="about">About this App</string>
 
+    <string-array name="menu_array">
+        <item>@string/books</item>
+        <item>@string/scan</item>
+        <item>@string/about</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
     <string name="navigation_drawer_open" >Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
