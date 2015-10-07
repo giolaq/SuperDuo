@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -28,6 +31,8 @@ import it.jaschke.alexandria.api.Callback;
 
 public class MainActivity extends AppCompatActivity implements Callback {
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
     //Better way to create a drawer
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
      * Used to store the last screen mTitle. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-    public static boolean IS_TABLET = false;
+    private boolean mTwoPane;
     private BroadcastReceiver messageReciever;
 
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
@@ -48,12 +53,8 @@ public class MainActivity extends AppCompatActivity implements Callback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IS_TABLET = isTablet();
-        if(IS_TABLET){
-            setContentView(R.layout.activity_main_tablet);
-        }else {
-            setContentView(R.layout.activity_main);
-        }
+        setContentView(R.layout.activity_main);
+
 
         mTitle = mDrawerTitle = getTitle();
         mMenuItems = getResources().getStringArray(R.array.menu_array);
@@ -70,6 +71,25 @@ public class MainActivity extends AppCompatActivity implements Callback {
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        if (findViewById(R.id.right_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                BookDetail fragment = new BookDetail();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.right_container, fragment, DETAILFRAGMENT_TAG)
+                        .commit();
+
+            }
+        } else {
+            mTwoPane = false;
+        }
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -96,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
         }
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
     }
 
 
@@ -151,33 +171,39 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onItemSelected(String ean) {
-        Bundle args = new Bundle();
-        args.putString(BookDetail.EAN_KEY, ean);
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putString(BookDetail.EAN_KEY, ean);
 
-        BookDetail fragment = new BookDetail();
-        fragment.setArguments(args);
+            BookDetail fragment = new BookDetail();
+            fragment.setArguments(args);
 
-        int id = R.id.container;
-        if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.right_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(BookDetail.EAN_KEY, ean);
+
+            startActivity(intent);
+
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
 
     }
 
     private class MessageReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra(MESSAGE_KEY)!=null){
+            if (intent.getStringExtra(MESSAGE_KEY) != null) {
                 Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    public void goBack(View view){
+    public void goBack(View view) {
         getSupportFragmentManager().popBackStack();
     }
 
@@ -189,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
+        if (getSupportFragmentManager().getBackStackEntryCount() < 2) {
             finish();
         }
         super.onBackPressed();
@@ -208,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment nextFragment;
 
-        switch (position){
+        switch (position) {
             default:
             case 0:
                 nextFragment = new ListOfBooks();
