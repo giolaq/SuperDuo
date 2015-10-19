@@ -72,21 +72,22 @@ public class ScoresAdapter extends CursorAdapter
                     cursor.getInt(COL_LEAGUE)));
             TextView league = (TextView) v.findViewById(R.id.league_textview);
             league.setText(Utilities.getLeague(context, cursor.getInt(COL_LEAGUE)));
-            Button share_button = (Button) v.findViewById(R.id.share_button);
-            share_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v)
-                {
-                    //add Share Action
-                    context.startActivity(createShareForecastIntent(mHolder.home_name.getText()+" "
-                    +mHolder.score.getText()+" "+mHolder.away_name.getText() + " "));
-                }
-            });
+
         }
         else
         {
             container.removeAllViews();
         }
+        Button share_button = (Button) view.findViewById(R.id.share_button);
+        share_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                //add Share Action
+                context.startActivity(createShareForecastIntent(mHolder.home_name.getText()+" "
+                        +mHolder.score.getText()+" "+mHolder.away_name.getText() + " "));
+            }
+        });
 
     }
     public Intent createShareForecastIntent(String ShareText) {
