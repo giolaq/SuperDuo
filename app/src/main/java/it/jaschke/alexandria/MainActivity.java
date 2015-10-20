@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        //MenuInflater inflater = getMenuInflater();
+       // inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -149,15 +149,14 @@ public class MainActivity extends AppCompatActivity implements Callback {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        // Handle action bar item clicks here.
+        //int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        //No need to select start screen in this way
+       /* if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
