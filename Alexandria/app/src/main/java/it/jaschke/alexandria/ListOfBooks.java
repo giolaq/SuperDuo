@@ -37,6 +37,13 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         super.onCreate(savedInstanceState);
     }
 
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        restartLoader();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 

@@ -124,18 +124,11 @@ public class MainActivity extends AppCompatActivity implements Callback {
         mTitle = getString(titleId);
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        //MenuInflater inflater = getMenuInflater();
+       // inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -150,15 +143,20 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+        // Pass the event to ActionBarDrawerToggle
+        // If it returns true, then it has handled
+        // the nav drawer indicator touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        // Handle action bar item clicks here.
+        //int id = item.getItemId();
+
+        //No need to select start screen in this way
+       /* if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -201,16 +199,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
                 Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    public void goBack(View view) {
-        getSupportFragmentManager().popBackStack();
-    }
-
-    private boolean isTablet() {
-        return (getApplicationContext().getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     @Override

@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import it.jaschke.alexandria.services.DownloadImage;
 
 
 public class BookDetail extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String LOG_TAG = BookDetail.class.getSimpleName();
 
     public static final String EAN_KEY = "EAN";
     private final int LOADER_ID = 10;
@@ -57,7 +59,8 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
                 bookIntent.putExtra(BookService.EAN, ean);
                 bookIntent.setAction(BookService.DELETE_BOOK);
                 getActivity().startService(bookIntent);
-                getActivity().getSupportFragmentManager().popBackStack();
+                //Just go back, popBackStack is async
+                getActivity().onBackPressed();
             }
         });
         return rootView;
@@ -114,10 +117,17 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         String desc = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.DESC));
         ((TextView) rootView.findViewById(R.id.fullBookDesc)).setText(desc);
 
-        String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
+        String authors = null;
+        try {
+            authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
+        } catch(NullPointerException e) {
+            Log.d(LOG_TAG, "No authors");
+        }
+        if ( authors != null ) {
+            String[] authorsArr = authors.split(",");
+            ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
+            ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
             new DownloadImage((ImageView) rootView.findViewById(R.id.fullBookCover)).execute(imgUrl);
